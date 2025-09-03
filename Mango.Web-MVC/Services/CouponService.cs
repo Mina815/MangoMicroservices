@@ -17,7 +17,7 @@ namespace Mango.Web_MVC.Services
             {
                 ApiType = StaticData.ApiType.POST,
                 Data = coupon,
-                Url = StaticData.CouponAPIBase + "/api/coupon/CreateCoupon",
+                Url = StaticData.CouponAPIBase + "/api/Coupon/CreateCoupon",
                 AccessToken = ""
             });
         }
@@ -27,7 +27,7 @@ namespace Mango.Web_MVC.Services
             return await _baseService.SendAsync(new RequestDto()
             {
                 ApiType = StaticData.ApiType.DELETE,
-                Url = StaticData.CouponAPIBase + "/api/coupon/DeleteCoupon/" + couponId,
+                Url = StaticData.CouponAPIBase + "/api/Coupon/DeleteCoupon/" + couponId,
                 AccessToken = ""
             });
         }
@@ -37,7 +37,7 @@ namespace Mango.Web_MVC.Services
             return await _baseService.SendAsync(new RequestDto()
             {
                 ApiType = StaticData.ApiType.GET,
-                Url = StaticData.CouponAPIBase + "/api/coupon/GetAllCoupons",
+                Url = StaticData.CouponAPIBase + "/api/Coupon/GetAllCoupons",
                 AccessToken = ""
             });
         }
@@ -47,7 +47,7 @@ namespace Mango.Web_MVC.Services
             return await _baseService.SendAsync(new RequestDto()
             {
                 ApiType = StaticData.ApiType.GET,
-                Url = StaticData.CouponAPIBase + "/api/coupon/GetCouponByCode/" + CouponCode,
+                Url = StaticData.CouponAPIBase + "/api/Coupon/GetCouponByCode/" + CouponCode,
                 AccessToken = ""
             });
         }
@@ -58,7 +58,7 @@ namespace Mango.Web_MVC.Services
             {
                 ApiType = StaticData.ApiType.PUT,
                 Data = coupon,
-                Url = StaticData.CouponAPIBase + "/api/coupon/UpdateCoupon",
+                Url = StaticData.CouponAPIBase + "/api/Coupon/UpdateCoupon",
                 AccessToken = ""
             });
         }

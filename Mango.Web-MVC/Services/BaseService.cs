@@ -67,7 +67,7 @@ namespace Mango.Web_MVC.Services
                         { IsSuccess = false, Message = "Internal server error" };
                     default:
                         var apiContent = await responseMessage.Content.ReadAsStringAsync();
-                        var apiResponse = JsonSerializer.Deserialize<ResponseDto>(apiContent);
+                        var apiResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseDto>(apiContent);
                         if (apiResponse != null)
                         {
                             apiResponse.IsSuccess = true;

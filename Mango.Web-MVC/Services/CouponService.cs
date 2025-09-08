@@ -42,6 +42,16 @@ namespace Mango.Web_MVC.Services
             });
         }
 
+        public async Task<ResponseDto?> GetCouponById(int CouponId)
+        {
+            return await _baseService.SendAsync(new RequestDto()
+            {
+                ApiType = StaticData.ApiType.GET,
+                Url = StaticData.CouponAPIBase + "/api/Coupon/" + CouponId,
+                AccessToken = ""
+            });
+        }
+
         public async Task<ResponseDto?> GetCouponByCodeAsync(string CouponCode)
         {
             return await _baseService.SendAsync(new RequestDto()

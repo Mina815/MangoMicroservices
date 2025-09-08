@@ -55,7 +55,7 @@ namespace Mango.Services.CouponAPI.Controllers
                     _responseDto.Message = "Coupon code cannot be null or empty.";
                     return _responseDto;
                 }
-                var coupon = _db.Coupons.FirstOrDefault(c => c.CouponCode == CouponCode);
+                var coupon = _db.Coupons.LastOrDefault(c => c.CouponCode == CouponCode);
                 if (coupon == null)
                 {
                     _responseDto.Message = "No coupons found.";
@@ -108,6 +108,16 @@ namespace Mango.Services.CouponAPI.Controllers
                     _responseDto.Message = "Invalid coupon data.";
                     return _responseDto;
                 }
+                couponDto.CreatedDate = DateTime.Now;
+
+                var existingCoupon = _db.Coupons.FirstOrDefault(c => c.CouponCode == couponDto.CouponCode);
+                if(existingCoupon != null)
+                {
+                    _responseDto.IsSuccess = false;
+                    _responseDto.Message = "Coupon code already exists.";
+                    return _responseDto;
+                }
+
                 var coupon = _mapper.Map<Coupon>(couponDto);
                 _db.Coupons.Add(coupon);
                 _db.SaveChanges();

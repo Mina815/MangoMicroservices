@@ -15,4 +15,11 @@
     <Folder Include="Views\CouponView\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Shared\_Notification.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

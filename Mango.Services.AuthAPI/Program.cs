@@ -23,6 +23,7 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("apisett
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IjwtTokenGenerator, jwtTokenGenerator>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 

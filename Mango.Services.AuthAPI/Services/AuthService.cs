@@ -3,6 +3,7 @@ using Mango.Services.AuthAPI.Models;
 using Mango.Services.AuthAPI.Models.Dto;
 using Mango.Services.AuthAPI.Services.IServices;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mango.Services.AuthAPI.Services
 {
@@ -11,15 +12,42 @@ namespace Mango.Services.AuthAPI.Services
         private readonly AppDBContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public AuthService(AppDBContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly IjwtTokenGenerator _jwtTokenGenerator;
+        public AuthService(AppDBContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IjwtTokenGenerator jwtTokenGenerator)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
-        public Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
+        public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
         {
-            throw new NotImplementedException();
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(u=> u.UserName.ToLower() == loginRequestDto.UserName.ToLower());
+            bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+            if (!isValid || user == null) {
+                return new LoginResponseDto()
+                {
+                    User = new UserDto(),
+                    Token = ""
+                };
+            }
+            //Generate JWT Token
+            var token = _jwtTokenGenerator.GenerateToken(user);
+
+            UserDto CurrentUserDto = new UserDto()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+            LoginResponseDto LoginResponseDto = new LoginResponseDto()
+            {
+                User = CurrentUserDto,
+                Token = token
+            };
+            return LoginResponseDto;
         }
 
         public async Task<string> RegisterAsync(RegistrationRequestDto registrationRequestDto)

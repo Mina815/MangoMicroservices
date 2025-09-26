@@ -75,7 +75,7 @@ namespace Mango.Services.AuthAPI.Services
         {
             var user = new ApplicationUser()
             {
-                UserName = registrationRequestDto.UserName,
+                UserName = registrationRequestDto.Email,
                 Name = registrationRequestDto.Name,
                 Email = registrationRequestDto.Email,
                 NormalizedEmail = registrationRequestDto.Email.ToUpper(),

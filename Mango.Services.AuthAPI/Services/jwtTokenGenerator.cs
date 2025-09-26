@@ -11,10 +11,8 @@ namespace Mango.Services.AuthAPI.Services
     public class jwtTokenGenerator : IjwtTokenGenerator
     {
         private readonly JwtOptions _jwtOptions;
-        public jwtTokenGenerator(IOptions< JwtOptions> jwtOptions)
-        {
-            _jwtOptions = jwtOptions.Value;
-        }
+        public jwtTokenGenerator(IOptions< JwtOptions> jwtOptions) => _jwtOptions = jwtOptions.Value;
+      
         public string GenerateToken(ApplicationUser applicationUser)
         {
             var tokenHelper = new JwtSecurityTokenHandler();

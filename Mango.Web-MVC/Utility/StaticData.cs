@@ -12,6 +12,7 @@
             DELETE
         }
         public const string RoleAdmin = "ADMIN";
+        public const string TokenCookie = "JWTToken";
         public const string RoleCustomer = "CUSTOMER";
     }
 }

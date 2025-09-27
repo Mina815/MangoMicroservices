@@ -54,9 +54,9 @@ namespace Mango.Web_MVC.Services
                     case HttpStatusCode.NotFound:
                         return new ResponseDto()
                         { IsSuccess = false, Message = "Resource not found"};
-                    case HttpStatusCode.BadRequest:
-                        return new ResponseDto()
-                        { IsSuccess = false, Message = "Bad request" };
+                    //case HttpStatusCode.BadRequest:
+                    //    return new ResponseDto()
+                    //    { IsSuccess = false, Message = "Bad request" };
                     case HttpStatusCode.Unauthorized:
                         return new ResponseDto()
                         { IsSuccess = false, Message = "Unauthorized access" };
@@ -69,8 +69,14 @@ namespace Mango.Web_MVC.Services
                     default:
                         var apiContent = await responseMessage.Content.ReadAsStringAsync();
                         var apiResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseDto>(apiContent);
+                        if (responseMessage.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            apiResponse.IsSuccess = false;
+                            return apiResponse;
+                        }
                         if (apiResponse != null)
                         {
+
                             apiResponse.IsSuccess = true;
                             return apiResponse;
                         }

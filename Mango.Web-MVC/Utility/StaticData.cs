@@ -4,6 +4,7 @@
     {
         public static string CouponAPIBase { get; set; } 
         public static string AuthAPIBase { get; set; } 
+        public static string ProductAPIBase { get; set; } 
         public enum ApiType
         {
             GET,
@@ -14,5 +15,11 @@
         public const string RoleAdmin = "ADMIN";
         public const string TokenCookie = "JWTToken";
         public const string RoleCustomer = "CUSTOMER";
+
+        public enum ContentType
+        {
+            Json,
+            MultipartFormData,
+        }
     }
 }

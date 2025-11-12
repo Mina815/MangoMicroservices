@@ -17,25 +17,30 @@ namespace Mango.Service.ProductAPI.Controllers
         private readonly AppDbContext _db;
         private ResponseDto _response;
         private IMapper _mapper;
-
-        public ProductAPIController(AppDbContext db, IMapper mapper)
+        private readonly ILogger<ProductAPIController> _logger;
+        public ProductAPIController(AppDbContext db, IMapper mapper, ILogger<ProductAPIController> logger)
         {
             _db = db;
             _mapper = mapper;
             _response = new ResponseDto();
+            _logger = logger;
         }
         [HttpGet]
-        public ResponseDto GetProdicts()
+        public ResponseDto GetProducts()
         {
             try
             {
-                IEnumerable<Product> objList = _db.Products.ToList();
-                _response.Result = _mapper.Map<IEnumerable<ProductDto>>(objList);
+                _logger.LogInformation("Getting products from DB...");
+                var objList = _db.Products.ToList();
+                var x = _mapper.Map<List<ProductDto>>(objList);
+                _response.Result = x;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error while getting products from Database ---  {ex.InnerException} ---- {ex.StackTrace} ");
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
+
             }
             return _response;
         }
@@ -46,11 +51,12 @@ namespace Mango.Service.ProductAPI.Controllers
         {
             try
             {
-                Product obj = _db.Products.First(u => u.ProductId == id);
+                var obj = _db.Products.First(u => u.ProductId == id);
                 _response.Result = _mapper.Map<ProductDto>(obj);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error while getting product with id = {id} from Database ---  {ex.InnerException} ---- {ex.StackTrace} ");
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
@@ -58,19 +64,49 @@ namespace Mango.Service.ProductAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "admin")]
         public ResponseDto CreateProduct([FromBody] ProductDto ProductDto)
         {
             try
             {
-                Product obj = _mapper.Map<Product>(ProductDto);
+                var obj = _mapper.Map<Product>(ProductDto);
                 _db.Products.Add(obj);
                 _db.SaveChanges();
 
+                if (ProductDto.Image != null)
+                {
+
+                    string fileName = obj.ProductId + Path.GetExtension(ProductDto.Image.FileName);
+                    string filePath = @"wwwroot\ProductImages\" + fileName;
+
+                    //I have added the if condition to remove the any image with same name if that exist in the folder by any change
+                    var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    FileInfo file = new FileInfo(directoryLocation);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
+                    var filePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    using (var fileStream = new FileStream(filePathDirectory, FileMode.Create))
+                    {
+                        ProductDto.Image.CopyTo(fileStream);
+                    }
+                    var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                    obj.ImageUrl = baseUrl + "/ProductImages/" + fileName;
+                    obj.ImageLocalPath = filePath;
+                }
+                else
+                {
+                    obj.ImageUrl = "https://placehold.co/600x400";
+                }
+                _db.Products.Update(obj);
+                _db.SaveChanges();
                 _response.Result = _mapper.Map<ProductDto>(obj);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error In create product ---  {ex.InnerException} ---- {ex.StackTrace} ");
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
@@ -78,12 +114,12 @@ namespace Mango.Service.ProductAPI.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "admin")]
         public ResponseDto UpdateProduct([FromBody] ProductDto ProductDto)
         {
             try
             {
-                Product obj = _mapper.Map<Product>(ProductDto);
+                var obj = _mapper.Map<Product>(ProductDto);
                 _db.Products.Update(obj);
                 _db.SaveChanges();
 
@@ -91,6 +127,7 @@ namespace Mango.Service.ProductAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error update product ---  {ex.InnerException} ---- {ex.StackTrace} ");
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
@@ -98,17 +135,18 @@ namespace Mango.Service.ProductAPI.Controllers
         }
         [HttpDelete]
         [Route("{id:int}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "admin")]
         public ResponseDto DeleteProductById(int id)
         {
             try
             {
-                Product obj = _db.Products.First(u => u.ProductId == id);
+                var obj = _db.Products.First(u => u.ProductId == id);
                 _db.Products.Remove(obj);
                 _db.SaveChanges();
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error in delete product ---  {ex.InnerException} ---- {ex.StackTrace} ");
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }

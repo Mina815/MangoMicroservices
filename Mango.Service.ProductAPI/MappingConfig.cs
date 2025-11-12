@@ -4,15 +4,11 @@ using Mango.Service.ProductAPI.Models.Dto;
 
 namespace Mango.Service.ProductAPI
 {
-    public class MappingConfig
+    public class MappingConfig : Profile
     {
-        public static MapperConfiguration RegisterMaps()
+        public MappingConfig()
         {
-            var mappingConfig = new MapperConfiguration(config =>
-            {
-                config.CreateMap<ProductDto, Product>().ReverseMap();
-            });
-            return mappingConfig;
+            CreateMap<ProductDto, Product>().ReverseMap();
         }
     }
 }
